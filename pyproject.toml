@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools"]
+
+[project]
+name = "ml-streamlit"
+dynamic = ["version"]
+authors = [
+    {name = "Ahmed A. Qura", email = "aqura@tq.com"},
+    {name = "Ahmed R. Ibrahim", email = "armaaar@outlook.com"},
+]
+
+[tool.setuptools.packages]
+find = {}
