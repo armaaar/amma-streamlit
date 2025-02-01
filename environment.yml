@@ -3,7 +3,7 @@ channels:
     - defaults
     - conda-forge
 dependencies:
-    - python=3.8
+    - python=3.11
     # App
     - streamlit
     # Data
@@ -13,12 +13,14 @@ dependencies:
     # Experiments
     - jupyterlab
     # ML
-    - tensorflow
-    - scikit-learn
+    - scikit-learn=1.6.1
     # Visualization
     - mlxtend
     - matplotlib
     # Pip packages
     - pip
     - pip:
-          - peewee
+        # ORM
+        - peewee
+        # ML
+        - tensorflow[and-cuda]==2.18.0

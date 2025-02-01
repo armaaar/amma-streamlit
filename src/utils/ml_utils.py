@@ -12,6 +12,8 @@ from src.ml_models.mock_model import MockModel
 from src.utils.utils import ROOT_DIR
 
 
+MODEL_OUTPUT = ['Lean', 'Nominal', 'ExcessAir', 'Fouling', 'Scaling']
+
 @st.cache_data
 def get_active_model() -> Tuple:
     """Load active model from DB"""

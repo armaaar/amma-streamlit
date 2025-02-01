@@ -1,5 +1,6 @@
 """The main entry point for the streamlit app"""
 
+import pandas as pd
 import streamlit as st
 from peewee import fn
 
@@ -8,7 +9,7 @@ from src.db_models.test_sample import TestSample
 
 from db_models.prediction import Prediction
 from utils.db_utils import connect_db
-from utils.ml_utils import get_active_model
+from utils.ml_utils import MODEL_OUTPUT, get_active_model
 
 # Connect to DB
 connect_db()
@@ -93,25 +94,22 @@ water_mdot = form.number_input(
 if form.button("Predict", disabled=st.session_state.is_form_disabled):
     # Get active model
     model, _ = get_active_model()
-    prediction = model.predict(
-        [
-            {
+    prediction = model.predict(pd.DataFrame([{
                 "Fuel_Mdot": fuel_mdot,
                 "Tair": tair,
                 "Treturn": treturn,
                 "Tsupply": tsupply,
                 "Water_Mdot": water_mdot,
-            }
-        ]
+            }])
     )[0]
-    st.session_state.model_prediction = prediction
+    st.session_state.model_prediction = MODEL_OUTPUT[prediction.tolist().index(1)]
 
 
 # Form data
 if st.session_state.model_prediction:
     prediction = st.session_state.model_prediction
     st.markdown(f"Prediction: **{prediction}**")
-    st.write("Give your feedbakc")
+    st.write("Give your feedback")
     feedback = st.feedback("thumbs")
 
     if feedback is not None:
@@ -137,7 +135,7 @@ if st.session_state.model_prediction:
         else:
             correct_value = st.selectbox(
                 "What is the correct class value?",
-                ("Lean", "Nominal", "ExcessAir", "Fouling", "Scaling"),
+                MODEL_OUTPUT,
                 index=None,
                 placeholder="Select the correct class value",
             )
