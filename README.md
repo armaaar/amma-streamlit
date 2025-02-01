@@ -1,4 +1,4 @@
-# ML Streamlit
+# Amma Streamlit
 
 This is a ml streamlit app. More description to come.
 

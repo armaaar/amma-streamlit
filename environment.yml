@@ -1,17 +1,24 @@
-name: ml-streamlit
+name: amma-streamlit
 channels:
-  - defaults
+    - defaults
+    - conda-forge
 dependencies:
-  - python=3.12.8
-  # App
-  - streamlit
-  # Data
-  - pandas
-  # Code Quality
-  - pylint
-  # Experiments
-  - jupyterlab
-  # Pip packages
-  - pip
-  - pip:
-      - peewee
+    - python=3.8
+    # App
+    - streamlit
+    # Data
+    - pandas
+    # Code Quality
+    - pylint
+    # Experiments
+    - jupyterlab
+    # ML
+    - tensorflow
+    - scikit-learn
+    # Visualization
+    - mlxtend
+    - matplotlib
+    # Pip packages
+    - pip
+    - pip:
+          - peewee

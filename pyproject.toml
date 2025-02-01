@@ -2,10 +2,10 @@
 requires = ["setuptools"]
 
 [project]
-name = "ml-streamlit"
+name = "amma-streamlit"
 dynamic = ["version"]
 authors = [
-    {name = "Ahmed A. Qura", email = "aqura@tq.com"},
+    {name = "Ahmed A. Qura", email = "ahmedqura96@gmail.com"},
     {name = "Ahmed R. Ibrahim", email = "armaaar@outlook.com"},
 ]
 

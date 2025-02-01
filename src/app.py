@@ -3,8 +3,10 @@
 import streamlit as st
 from peewee import fn
 
-from db_models.prediction import Prediction
 from src.db_models.sample import Sample
+from src.db_models.test_sample import TestSample
+
+from db_models.prediction import Prediction
 from utils.db_utils import connect_db
 from utils.ml_utils import get_active_model
 
@@ -23,7 +25,7 @@ form = st.container(border=True)
 
 # Random sample fetcher
 if form.button("Use a random sample"):
-    sample_record = Sample.select().order_by(fn.Random()).limit(1)[0]
+    sample_record = TestSample.select().order_by(fn.Random()).limit(1)[0]
     st.session_state.prediction_form__fuel_mdot = sample_record.fuel_mdot
     st.session_state.prediction_form__tair = sample_record.tair
     st.session_state.prediction_form__treturn = sample_record.treturn
@@ -109,6 +111,7 @@ if form.button("Predict", disabled=st.session_state.is_form_disabled):
 if st.session_state.model_prediction:
     prediction = st.session_state.model_prediction
     st.markdown(f"Prediction: **{prediction}**")
+    st.write("Give your feedbakc")
     feedback = st.feedback("thumbs")
 
     if feedback is not None:
