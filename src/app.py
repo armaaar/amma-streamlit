@@ -22,6 +22,9 @@ if "model_prediction" not in st.session_state:
 if "is_form_disabled" not in st.session_state:
     st.session_state.is_form_disabled = True
 
+if "results" not in st.session_state:
+    st.session_state.results = (None, None)
+
 form = st.container(border=True)
 
 # Random sample fetcher
@@ -114,23 +117,45 @@ if st.session_state.model_prediction:
 
     if feedback is not None:
         _, model_record = get_active_model()
-        sample_record = Sample(
-            fuel_mdot=fuel_mdot,
-            tair=tair,
-            treturn=treturn,
-            tsupply=tsupply,
-            water_mdot=water_mdot,
-        )
-        prediction_record = Prediction(
-            predicted=prediction,
-            sample=sample_record,
-            model=model_record,
-        )
+        saved_sample_record, saved_prediction_record = st.session_state.results
+
+        if saved_sample_record is None:
+            sample_record = Sample(
+                fuel_mdot=fuel_mdot,
+                tair=tair,
+                treturn=treturn,
+                tsupply=tsupply,
+                water_mdot=water_mdot,
+            )
+        else:
+            saved_sample_record.update(
+                fuel_mdot=fuel_mdot,
+                tair=tair,
+                treturn=treturn,
+                tsupply=tsupply,
+                water_mdot=water_mdot,
+            )
+            sample_record = saved_sample_record
+
+        if saved_prediction_record is None:
+            prediction_record = Prediction(
+                predicted=prediction,
+                sample=sample_record,
+                model=model_record,
+            )
+        else:
+            saved_prediction_record.update(
+                predicted=prediction,
+                sample=sample_record,
+                model=model_record,
+            )
+            prediction_record = saved_prediction_record
 
         if feedback == 1:
             sample_record.save()
             prediction_record.feedback = prediction
             prediction_record.save()
+            st.session_state.results = (sample_record, prediction_record)
             st.text("Thank you for your feedback!")
         else:
             correct_value = st.selectbox(
@@ -143,4 +168,5 @@ if st.session_state.model_prediction:
                 sample_record.save()
                 prediction_record.feedback = correct_value
                 prediction_record.save()
+                st.session_state.results = (sample_record, prediction_record)
                 st.text("Thank you for your feedback!")
