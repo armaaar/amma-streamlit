@@ -9,3 +9,5 @@ models/**/*
 __pycache__
 .ipynb_checkpoints
 *.egg-info
+
+.streamlit/secrets.toml
