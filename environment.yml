@@ -17,10 +17,16 @@ dependencies:
     # Visualization
     - mlxtend
     - matplotlib
+    - PyQt=5.15.10
+    # DB & Storage
+    - psycopg2
+    - supabase
     # Pip packages
     - pip
     - pip:
         # ORM
         - peewee
+        # HTTP2
+        - httpx[http2]
         # ML
         - tensorflow[and-cuda]==2.18.0

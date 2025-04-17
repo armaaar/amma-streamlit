@@ -9,7 +9,7 @@ from src.db_models.test_sample import TestSample
 
 from db_models.prediction import Prediction
 from utils.db_utils import connect_db
-from utils.ml_utils import MODEL_OUTPUT, get_active_model
+from utils.ml_utils import decode_model_output, get_active_model, get_model_possible_outputs, scale_model_input
 
 # Connect to DB
 connect_db()
@@ -30,25 +30,26 @@ form = st.container(border=True)
 # Random sample fetcher
 if form.button("Use a random sample"):
     sample_record = TestSample.select().order_by(fn.Random()).limit(1)[0]
-    st.session_state.prediction_form__fuel_mdot = sample_record.fuel_mdot
-    st.session_state.prediction_form__tair = sample_record.tair
-    st.session_state.prediction_form__treturn = sample_record.treturn
-    st.session_state.prediction_form__tsupply = sample_record.tsupply
-    st.session_state.prediction_form__water_mdot = sample_record.water_mdot
+    st.session_state.prediction_form__fuel_mdot = sample_record.Fuel_Mdot
+    st.session_state.prediction_form__tair = sample_record.Tair
+    st.session_state.prediction_form__treturn = sample_record.Treturn
+    st.session_state.prediction_form__tsupply = sample_record.Tsupply
+    st.session_state.prediction_form__water_mdot = sample_record.Water_Mdot
     st.session_state.is_form_disabled = False
     st.session_state.model_prediction = None
 
-
-# Form data
-def on_form_input_change():
-    """Disables submit button if any value is empty"""
-    if (
+def can_predict():
+    return (
         st.session_state.prediction_form__fuel_mdot is not None
         and st.session_state.prediction_form__tair is not None
         and st.session_state.prediction_form__treturn is not None
         and st.session_state.prediction_form__tsupply is not None
         and st.session_state.prediction_form__water_mdot is not None
-    ):
+    )
+# Form data
+def on_form_input_change():
+    """Disables submit button if any value is empty"""
+    if can_predict():
         st.session_state.is_form_disabled = False
     else:
         st.session_state.is_form_disabled = True
@@ -95,18 +96,21 @@ water_mdot = form.number_input(
 )
 
 if form.button("Predict", disabled=st.session_state.is_form_disabled):
-    # Get active model
-    model, _ = get_active_model()
-    prediction = model.predict(pd.DataFrame([{
-                "Fuel_Mdot": fuel_mdot,
-                "Tair": tair,
-                "Treturn": treturn,
-                "Tsupply": tsupply,
-                "Water_Mdot": water_mdot,
-            }])
-    )[0]
-    st.session_state.model_prediction = MODEL_OUTPUT[prediction.tolist().index(1)]
-
+    if not can_predict():
+        st.session_state.is_form_disabled = True
+        st.warning("Please fill the form first")
+    else:
+        # Get active model
+        model, r = get_active_model()
+        input = scale_model_input(pd.DataFrame([{
+            "Fuel_Mdot": fuel_mdot,
+            "Tair": tair,
+            "Treturn": treturn,
+            "Tsupply": tsupply,
+            "Water_Mdot": water_mdot,
+        }]))
+        prediction = model.predict(input, verbose=0)
+        st.session_state.model_prediction = decode_model_output(prediction)[0]
 
 # Form data
 if st.session_state.model_prediction:
@@ -121,19 +125,19 @@ if st.session_state.model_prediction:
 
         if saved_sample_record is None:
             sample_record = Sample(
-                fuel_mdot=fuel_mdot,
-                tair=tair,
-                treturn=treturn,
-                tsupply=tsupply,
-                water_mdot=water_mdot,
+                Fuel_Mdot=fuel_mdot,
+                Tair=tair,
+                Treturn=treturn,
+                Tsupply=tsupply,
+                Water_Mdot=water_mdot,
             )
         else:
             saved_sample_record.update(
-                fuel_mdot=fuel_mdot,
-                tair=tair,
-                treturn=treturn,
-                tsupply=tsupply,
-                water_mdot=water_mdot,
+                Fuel_Mdot=fuel_mdot,
+                Tair=tair,
+                Treturn=treturn,
+                Tsupply=tsupply,
+                Water_Mdot=water_mdot,
             )
             sample_record = saved_sample_record
 
@@ -160,7 +164,7 @@ if st.session_state.model_prediction:
         else:
             correct_value = st.selectbox(
                 "What is the correct class value?",
-                MODEL_OUTPUT,
+                get_model_possible_outputs(),
                 index=None,
                 placeholder="Select the correct class value",
             )
