@@ -9,11 +9,11 @@ import streamlit as st
 from tensorflow.keras.models import load_model
 from tensorflow.python.keras.models import Sequential
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
+from sklearn.model_selection import train_test_split
 
 from sklearn.metrics import confusion_matrix
 from mlxtend.plotting import plot_confusion_matrix
 
-from src.db_models.test_sample import TestSample
 from src.db_models.ml_model import MlModel
 from src.utils.bucket_utils import get_bucket_file_path, load_full_dataset
 
@@ -45,7 +45,6 @@ def get_all_models() -> list[tuple[Sequential, MlModel]]:
 
 @st.cache_resource
 def get_model_input_scaler() -> MinMaxScaler:
-    """Load all model from DB"""
     data = load_full_dataset()
     features = data.drop(columns=['Condition', 'Class'])
 
@@ -56,7 +55,6 @@ def get_model_input_scaler() -> MinMaxScaler:
 
 @st.cache_resource
 def get_model_output_encoder() -> OneHotEncoder:
-    """Load all model from DB"""
     data = load_full_dataset()
     predictions = data["Class"]
 
@@ -69,7 +67,6 @@ def get_model_output_encoder() -> OneHotEncoder:
 
 @st.cache_data
 def get_model_possible_outputs() -> list[str]:
-    """Load all model from DB"""
     one_hot_encoder = get_model_output_encoder()
     # Remove `Class_` from the beginning
     classes = one_hot_encoder.get_feature_names_out(['Class'])
@@ -95,13 +92,14 @@ def decode_model_output(prediction: np.ndarray) -> list[str]:
 @st.cache_data
 def get_test_data() -> tuple[pd.DataFrame, pd.Series]:
     """Load test data from DB"""
+    data = load_full_dataset()
+    predictions = data["Class"]
+    features = data.drop(columns=['Condition', 'Class'])
 
-    records: list[TestSample] = TestSample.select()
+    _, x_test, _, y_test = train_test_split(features, predictions, random_state=42)
 
-    test_df = pd.DataFrame(list(records.dicts()))
-
-    x_test = test_df.drop(['prediction', 'id'], axis=1)
-    y_test = test_df.rename(columns={"prediction": "Class"})['Class']
+    test_df = x_test.copy()
+    test_df['Class'] = y_test
 
     x_test = scale_model_input(x_test)
     y_test = encode_model_output(y_test)

@@ -5,9 +5,9 @@ import streamlit as st
 from peewee import fn
 
 from src.db_models.sample import Sample
-from src.db_models.test_sample import TestSample
 
 from db_models.prediction import Prediction
+from utils.bucket_utils import load_full_dataset
 from utils.db_utils import connect_db
 from utils.ml_utils import decode_model_output, get_active_model, get_model_possible_outputs, scale_model_input
 
@@ -29,7 +29,7 @@ form = st.container(border=True)
 
 # Random sample fetcher
 if form.button("Use a random sample"):
-    sample_record = TestSample.select().order_by(fn.Random()).limit(1)[0]
+    sample_record = load_full_dataset().sample(1).iloc[0]
     st.session_state.prediction_form__fuel_mdot = sample_record.Fuel_Mdot
     st.session_state.prediction_form__tair = sample_record.Tair
     st.session_state.prediction_form__treturn = sample_record.Treturn
