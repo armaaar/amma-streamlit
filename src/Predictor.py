@@ -2,11 +2,10 @@
 
 import pandas as pd
 import streamlit as st
-from peewee import fn
 
-from src.db_models.sample import Sample
-
+from db_models.sample import Sample
 from db_models.prediction import Prediction
+
 from utils.bucket_utils import load_full_dataset
 from utils.db_utils import connect_db
 from utils.ml_utils import decode_model_output, get_active_model, get_model_possible_outputs, scale_model_input

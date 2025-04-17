@@ -1,6 +1,5 @@
 """All DB utilities"""
 
-import os
 from matplotlib.figure import Figure
 import numpy as np
 import pandas as pd
@@ -14,8 +13,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from mlxtend.plotting import plot_confusion_matrix
 
-from src.db_models.ml_model import MlModel
-from src.utils.bucket_utils import get_bucket_file_path, load_full_dataset
+from db_models.ml_model import MlModel
+from utils.bucket_utils import get_bucket_file_path, load_full_dataset
 
 @st.cache_resource
 def get_active_model() -> tuple[Sequential, MlModel]:

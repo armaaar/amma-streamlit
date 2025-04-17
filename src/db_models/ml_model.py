@@ -2,7 +2,7 @@
 
 from peewee import CharField, BooleanField
 
-from src.db_models.base_model import BaseModel
+from db_models.base_model import BaseModel
 
 
 class MlModel(BaseModel):

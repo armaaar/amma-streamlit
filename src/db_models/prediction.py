@@ -3,9 +3,9 @@
 from datetime import datetime
 from peewee import CharField, ForeignKeyField, DateField
 
-from src.db_models.base_model import BaseModel
-from src.db_models.sample import Sample
-from src.db_models.ml_model import MlModel
+from db_models.base_model import BaseModel
+from db_models.sample import Sample
+from db_models.ml_model import MlModel
 
 
 class Prediction(BaseModel):

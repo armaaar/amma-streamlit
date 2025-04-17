@@ -6,7 +6,7 @@ import streamlit as st
 
 from supabase import create_client, Client
 
-from src.utils.utils import ROOT_DIR
+from utils.utils import ROOT_DIR
 
 DATASET_FILE_NAME = "Boiler_emulator_dataset.csv"
 

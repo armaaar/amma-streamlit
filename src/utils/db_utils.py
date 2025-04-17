@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from src.db_models.base_model import db
+from db_models.base_model import db
 
 @st.cache_resource
 def connect_db() -> None:

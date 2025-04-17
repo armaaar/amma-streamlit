@@ -2,8 +2,6 @@
 # Connect to DB
 import os
 
-import numpy as np
-
 from db_models.ml_model import MlModel
 import streamlit as st
 from utils.db_utils import connect_db

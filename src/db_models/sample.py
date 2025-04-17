@@ -2,7 +2,7 @@
 
 from peewee import IntegerField, FloatField
 
-from src.db_models.base_model import BaseModel
+from db_models.base_model import BaseModel
 
 
 class Sample(BaseModel):
