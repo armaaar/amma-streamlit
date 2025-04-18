@@ -1,5 +1,6 @@
 
 # Connect to DB
+import datetime
 import os
 
 import pandas as pd
@@ -48,7 +49,33 @@ elif password == os.environ['DASHBOARD_PASSWORD']:
             st.pyplot(fig=fig)
 
     with st.expander("Feedback data", icon=":material/dataset:"):
-        samples: list[Sample] = Sample.select(Sample.Fuel_Mdot, Sample.Tair ,Sample.Treturn, Sample.Tsupply, Sample.Water_Mdot, Prediction.predicted, Prediction.feedback).join(Prediction)
+        today = datetime.date.today()
+        one_manth_ago = today - datetime.timedelta(days=30)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            start_date = st.date_input(
+                'Start date',
+                value=st.session_state.start_date if "start_date" in st.session_state else one_manth_ago,
+                key="start_date",
+                max_value=st.session_state.end_date if "end_date" in st.session_state else today)
+        with col2:
+            end_date = st.date_input(
+                'End date',
+                value=st.session_state.end_date if "end_date" in st.session_state else today,
+                key="end_date",
+                min_value=st.session_state.start_date if "start_date" in st.session_state else one_manth_ago)
+
+        samples: list[Sample] = Sample.select(
+            Prediction.date,
+            Sample.Fuel_Mdot,
+            Sample.Tair,
+            Sample.Treturn,
+            Sample.Tsupply,
+            Sample.Water_Mdot,
+            Prediction.predicted,
+            Prediction.feedback
+        ).join(Prediction).where(Prediction.date >= start_date, Prediction.date <= end_date)
         df = pd.DataFrame(list(samples.dicts()))
         st.dataframe(df, hide_index=True, use_container_width=True)
 
