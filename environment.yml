@@ -29,4 +29,4 @@ dependencies:
         # HTTP2
         - httpx[http2]
         # ML
-        - tensorflow[and-cuda]==2.18.0
+        - tensorflow==2.18.0
