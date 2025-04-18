@@ -74,8 +74,9 @@ elif password == os.environ['DASHBOARD_PASSWORD']:
             Sample.Tsupply,
             Sample.Water_Mdot,
             Prediction.predicted,
-            Prediction.feedback
-        ).join(Prediction).where(Prediction.date >= start_date, Prediction.date <= end_date)
+            Prediction.feedback,
+            MlModel.model_path
+        ).join(Prediction).join(MlModel).where(Prediction.date >= start_date, Prediction.date <= end_date)
         df = pd.DataFrame(list(samples.dicts()))
         st.dataframe(df, hide_index=True, use_container_width=True)
 
