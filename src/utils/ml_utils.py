@@ -16,6 +16,9 @@ from mlxtend.plotting import plot_confusion_matrix
 from db_models.ml_model import MlModel
 from utils.bucket_utils import get_bucket_file_path, load_full_dataset
 
+def load_bucket_model(path: str) -> Sequential:
+    return load_model(get_bucket_file_path(path))
+
 @st.cache_resource
 def get_active_model() -> tuple[Sequential, MlModel]:
     """Load active model from DB"""
@@ -25,7 +28,7 @@ def get_active_model() -> tuple[Sequential, MlModel]:
     if model_record is None:
         raise RuntimeError("There is no active models in DB")
 
-    model = load_model(get_bucket_file_path(model_record.model_path))
+    model = load_bucket_model(model_record.model_path)
 
     return model, model_record
 
@@ -37,7 +40,7 @@ def get_all_models() -> list[tuple[Sequential, MlModel]]:
 
     model_records: list[MlModel] = MlModel.select()
     for record in model_records:
-        m = load_model(get_bucket_file_path(record.model_path))
+        m = load_bucket_model(record.model_path)
         models.append((m, record))
 
     return models
@@ -105,8 +108,10 @@ def get_test_data() -> tuple[pd.DataFrame, pd.Series]:
 
     return test_df, x_test, y_test
 
-
-def get_model_info(model: Sequential) -> tuple[pd.DataFrame, Figure]:
+@st.cache_data
+def get_model_info(model_path: str) -> tuple[pd.DataFrame, Figure]:
+    # We sent the path and not the model so streamlit can cache it
+    model = load_bucket_model(model_path)
     _, x_test, y_test = get_test_data()
 
     # Get accuracy
