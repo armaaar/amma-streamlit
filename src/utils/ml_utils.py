@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from tensorflow.keras.models import load_model
+from keras.api.models import load_model
 from tensorflow.python.keras.models import Sequential
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.model_selection import train_test_split
